@@ -72,6 +72,9 @@ def train(data_file, validation_split, model_name, model_basedir, limit_gpu, **k
         Model name.
     model_basedir : str
         Path to model folder (which stores configuration, weights, etc.)
+    limit_gpu : float
+        Fraction of the GPU memory to use.
+        Default: 0.5
     kwargs : dict
         Configuration attributes (see below).
 
