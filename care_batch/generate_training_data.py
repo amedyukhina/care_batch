@@ -52,6 +52,9 @@ def generate_training_data(basepath, source_dir, target_dir, save_file, axes='CZ
         Semantics of axes of loaded images (assumed to be the same for all images).
     pattern : str
         Glob-style pattern to match the desired TIFF images.
+
+    Attributes
+    ----------
     patch_size : tuple
         Shape of the patches to be extraced from raw images.
         Must be compatible with the number of dimensions and axes of the raw images.
