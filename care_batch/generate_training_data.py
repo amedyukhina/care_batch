@@ -13,15 +13,19 @@ def main():
                         help='Folder name relative to `basepath` that contain the source images (e.g., with low SNR)')
     parser.add_argument('--target_dir', type=str,
                         help='Folder name relative to `basepath` that contains the target images (e.g., with high SNR)')
-    for argname in ['axes', 'pattern']:
+    parser.add_argument("--n_patches_per_image", type=int, 
+                        help="Number of patches to be sampled/extracted from each raw image pair.")
+    parser.add_argument("--patch_size", type=str, default='16,16,16',
+                            help='list of patch sizes for all dimensions delimited by ``,``')
+    parser.add_argument("--no-shuffle", action="store_true",
+                        help="Switch off the random shuffle all extracted patches.")
+    parser.add_argument("--no-normalization", action="store_true",
+                        help="Switch off CARE's internal percentile normalizer")
+        
+    
+    for argname in ['axes', 'pattern', 'patch_axes', 'save_file']:
         parser.add_argument(rf"--{argname}", type=str, default='not_provided')
-
-    for argname in inspect.getfullargspec(create_patches).args:
-        if argname == 'patch_size':
-            parser.add_argument(rf"--{argname}", type=str, default='16,16,16',
-                                help='list of patch sizes for all dimensions delimited by ``,``')
-        else:
-            parser.add_argument(rf"--{argname}", default='not_provided')
+        
 
     args = vars(parser.parse_args())
     kwargs = dict()
@@ -29,7 +33,16 @@ def main():
         if args[key] != 'not_provided':
             kwargs[key] = args[key]
     kwargs['patch_size'] = tuple([int(item) for item in kwargs['patch_size'].split(',')])
-    kwargs['n_patches_per_image'] = int(kwargs['n_patches_per_image'])
+    
+    nonormalize = kwargs.pop('no_normalization')
+    if nonormalize:
+        kwargs['normalization'] = None
+        
+    noshuffle = kwargs.pop('no_shuffle')
+    if noshuffle:
+        kwargs['shuffle'] = False
+    else:
+        kwargs['shuffle'] = True
 
     generate_training_data(**kwargs)
 
