@@ -9,7 +9,7 @@ from csbdeep.utils import axes_dict, plot_history
 from csbdeep.utils.tf import limit_gpu_memory
 
 
-def train(data_file, validation_split, model_name, model_basedir, limit_gpu, **kwargs):
+def train(data_file, validation_split, model_name, model_basedir, limit_gpu=0.5, **kwargs):
     """
 
     Parameters
