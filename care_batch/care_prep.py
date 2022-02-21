@@ -3,17 +3,14 @@ import numpy as np
 from skimage import io
 from tqdm import tqdm
 from am_utils.utils import walk_dir
+from .utils import int_type
 
 
 def __copy_and_normalize(fn_in, fn_out, maxval=255):
     img = io.imread(fn_in)
     img = img - img.min()
     img = img.astype(np.float32) / np.max(img) * maxval
-    if maxval > 255:
-        dtype = np.uint16
-    else:
-        dtype = np.uint8
-    io.imsave(fn_out, img.astype(dtype))
+    io.imsave(fn_out, img.astype(int_type(img)))
 
 
 def care_prep(input_pair, output_dir, name_high='high', name_low='low', normalize=False, maxval=255):
