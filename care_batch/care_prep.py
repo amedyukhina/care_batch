@@ -8,7 +8,7 @@ from am_utils.utils import walk_dir
 def __copy_and_normalize(fn_in, fn_out, maxval=255):
     img = io.imread(fn_in)
     img = img - img.min()
-    img = img.astype(np.float) / np.max(img) * maxval
+    img = img.astype(np.float32) / np.max(img) * maxval
     if maxval > 255:
         dtype = np.uint16
     else:
@@ -26,6 +26,6 @@ def care_prep(input_pair, output_dir, name_high='high', name_low='low', normaliz
             if os.path.exists(fn_out):
                 os.remove(fn_out)
             if normalize:
-                __copy_and_normalize(fn_in, fn_out, maxval)
+                __copy_and_normalize(fn, fn_out, maxval)
             else:
                 os.symlink(fn, fn_out)
