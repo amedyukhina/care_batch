@@ -12,7 +12,7 @@ from skimage import io
 from ..care_prep import care_prep
 from ..datagen import datagen
 from ..evaluate import evaluate, summarize_stats
-from ..plot import plot_pairs
+from ..plot import plot_pairs, plot_patches
 from ..restore import restore
 from ..train import train
 
@@ -41,7 +41,7 @@ class TestBatch(unittest.TestCase):
         care_prep([path + 'input/high', path + 'input/low'],
                   path + 'data', normalize=True)
         datagen(path + 'data', source_dir='low', target_dir='high',
-                save_file=path + 'data.npz', axes='ZYX', patch_size=[8] * 3, n_patches_per_image=4)
+                save_file=path + 'data.npz', axes='ZYX', patch_size=[8] * 3, n_patches_per_image=20)
 
         train(path + 'data.npz', model_name='care_model', model_basedir=path + 'models',
               train_epochs=3, train_steps_per_epoch=10)
@@ -60,9 +60,13 @@ class TestBatch(unittest.TestCase):
         plot_pairs(fns[ind], folders, path + 'data')
         plt.savefig(path + 'plot.png')
 
+        plot_patches(path + 'data.npz', model_name='care_model', model_basedir=path + 'models',
+                     ncols=7, nrows=2)
+        plt.savefig(path + 'patches.png')
+
         self.assertTrue(os.path.exists(path + 'accuracy.csv'))
         self.assertEqual(len(pd.read_csv(path + 'accuracy.csv')), 3)
-        shutil.rmtree(path)
+        # shutil.rmtree(path)
 
 
 if __name__ == '__main__':
