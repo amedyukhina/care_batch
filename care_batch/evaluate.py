@@ -1,8 +1,8 @@
 import os
-import pandas as pd
-from skimage import io
 
 import numpy as np
+import pandas as pd
+from skimage import io
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity
 

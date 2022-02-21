@@ -1,12 +1,12 @@
-
 import os
-import numpy as np
 
+import numpy as np
 from am_utils.utils import walk_dir, imsave
 from csbdeep.models import CARE
 from csbdeep.utils.tf import limit_gpu_memory
 from skimage import io
 from tqdm import tqdm
+
 from .utils import int_type
 
 
@@ -81,4 +81,3 @@ def restore(input_dir, output_dir, model_name, model_basedir, limit_gpu=0.5,
             kwargs['normalizer'] = None
         restored = model.predict(x, **kwargs)
         imsave(output_fn, restored.astype(int_type(restored)))
-
