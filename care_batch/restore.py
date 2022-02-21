@@ -1,45 +1,25 @@
-from __future__ import print_function, unicode_literals, absolute_import, division
 
-import argparse
 import os
+import numpy as np
 
 from am_utils.utils import walk_dir, imsave
 from csbdeep.models import CARE
 from csbdeep.utils.tf import limit_gpu_memory
 from skimage import io
 from tqdm import tqdm
+from .utils import int_type
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--model_basedir', type=str,
-                        help='Path to model folder (which stores configuration, weights, etc.)')
-    parser.add_argument('--model_name', type=str,
-                        help='Model name (relative to ``model_basedir``')
-    parser.add_argument('--input_dir', type=str,
-                        help='Folder name with images to restore')
-    parser.add_argument('--output_dir', type=str,
-                        help='Folder name to save the restored images')
-    parser.add_argument('--limit_gpu', type=float, default=0.5,
-                        help='Fraction of the GPU memory to use. Default: ``0.5``')
-    parser.add_argument('--axes', type=str, default='ZYX',
-                        help='Axes of the input image. Default: ``ZYX``')
-    parser.add_argument("--n_tiles", type=str, default=None,
-                        help='A tuple of the number of tiles for every image axis delimited by ``,``')
-
-    for argname in ['normalizer', 'resizer']:
-        parser.add_argument(rf"--{argname}", type=str, default='not_provided')
-
-    args = vars(parser.parse_args())
-    kwargs = dict()
-    for key in args.keys():
-        if args[key] != 'not_provided':
-            kwargs[key] = args[key]
-    kwargs['n_tiles'] = tuple([int(item) for item in kwargs['n_tiles'].split(',')])
-    predict(**kwargs)
+def __normalize_image(img, maxval):
+    if img.min() > 0:
+        img = img - img.min()
+    if img.max() > maxval:
+        img = img.astype(np.float32) / img.max() * maxval
+    return img
 
 
-def predict(input_dir, output_dir, model_name, model_basedir, limit_gpu, **kwargs):
+def restore(input_dir, output_dir, model_name, model_basedir, limit_gpu=0.5,
+            normalize_image=True, maxval=255, **kwargs):
     """
 
     Parameters
@@ -55,6 +35,15 @@ def predict(input_dir, output_dir, model_name, model_basedir, limit_gpu, **kwarg
     limit_gpu : float
         Fraction of the GPU memory to use.
         Default: 0.5
+    normalize_image : bool
+        If True, the entire image will be normalized before restoration and no CARE patch normalization will be done.
+        If False, the default CARE patch normalization will be done.
+        Set to True, if the images were normalized before training data generation and no patch normalization was used.
+        Default is True.
+    maxval : int, optional
+        Maximum value for the normalized image.
+        Should be the same as in `care_prep`
+        Default is 255.
     kwargs : dict
         Configuration attributes (see below).
 
@@ -87,9 +76,9 @@ def predict(input_dir, output_dir, model_name, model_basedir, limit_gpu, **kwarg
         os.makedirs(os.path.dirname(output_fn), exist_ok=True)
 
         x = io.imread(sample)
+        if normalize_image:
+            x = __normalize_image(x, maxval)
+            kwargs['normalizer'] = None
         restored = model.predict(x, **kwargs)
-        imsave(output_fn, restored)
+        imsave(output_fn, restored.astype(int_type(restored)))
 
-
-if __name__ == '__main__':
-    main()
