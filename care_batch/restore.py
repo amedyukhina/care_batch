@@ -44,7 +44,7 @@ def restore(input_dir, output_dir, model_name, model_basedir, limit_gpu=0.5,
         Maximum value for the normalized image.
         Should be the same as in `care_prep`
         Default is 255.
-    kwargs : dict
+    kwargs : key value
         Configuration attributes (see below).
 
     Attributes
