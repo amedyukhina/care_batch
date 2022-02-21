@@ -1,2 +1,3 @@
-# care_restoration
-Batch restoration with CARE
+# CARE batch
+
+Batch restoration with [CARE](https://csbdeep.bioimagecomputing.com/tools/care/)
