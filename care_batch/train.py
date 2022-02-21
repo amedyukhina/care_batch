@@ -25,7 +25,7 @@ def train(data_file, model_name, model_basedir, validation_split=0.2, limit_gpu=
     limit_gpu : float
         Fraction of the GPU memory to use.
         Default: 0.5
-    kwargs : dict
+    kwargs : key value
         Configuration attributes (see below).
 
     Attributes
