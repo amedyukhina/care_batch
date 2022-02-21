@@ -4,6 +4,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import pylab as plt
 from am_utils.utils import walk_dir
 from ddt import ddt
 from skimage import io
@@ -11,6 +12,7 @@ from skimage import io
 from ..care_prep import care_prep
 from ..datagen import datagen
 from ..evaluate import evaluate, summarize_stats
+from ..plot import plot_pairs
 from ..restore import restore
 from ..train import train
 
@@ -51,6 +53,12 @@ class TestBatch(unittest.TestCase):
         evaluate(path + 'data/low', path + 'data/high', path + 'accuracy/low.csv', model_name='low')
         evaluate(path + 'data/high', path + 'data/high', path + 'accuracy/high.csv', model_name='high')
         summarize_stats(walk_dir(path + 'accuracy'), path + 'accuracy.csv')
+
+        fns = os.listdir(path + 'data/high')
+        ind = 0
+        folders = ['high', 'low', 'low_restored']
+        plot_pairs(fns[ind], folders, path + 'data')
+        plt.savefig(path + 'plot.png')
 
         self.assertTrue(os.path.exists(path + 'accuracy.csv'))
         self.assertEqual(len(pd.read_csv(path + 'accuracy.csv')), 3)
