@@ -1,53 +1,9 @@
-from __future__ import print_function, unicode_literals, absolute_import, division
-
-import argparse
-import inspect
 
 from csbdeep.data import RawData, create_patches
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--basepath', type=str, help='Base folder that contains sub-folders with images')
-    parser.add_argument('--source_dir', type=str,
-                        help='Folder name relative to `basepath` that contain the source images (e.g., with low SNR)')
-    parser.add_argument('--target_dir', type=str,
-                        help='Folder name relative to `basepath` that contains the target images (e.g., with high SNR)')
-    parser.add_argument("--n_patches_per_image", type=int, 
-                        help="Number of patches to be sampled/extracted from each raw image pair.")
-    parser.add_argument("--patch_size", type=str, default='16,16,16',
-                            help='list of patch sizes for all dimensions delimited by ``,``')
-    parser.add_argument("--no-shuffle", action="store_true",
-                        help="Switch off the random shuffle all extracted patches.")
-    parser.add_argument("--no-normalization", action="store_true",
-                        help="Switch off CARE's internal percentile normalizer")
-        
-    
-    for argname in ['axes', 'pattern', 'patch_axes', 'save_file']:
-        parser.add_argument(rf"--{argname}", type=str, default='not_provided')
-        
-
-    args = vars(parser.parse_args())
-    kwargs = dict()
-    for key in args.keys():
-        if args[key] != 'not_provided':
-            kwargs[key] = args[key]
-    kwargs['patch_size'] = tuple([int(item) for item in kwargs['patch_size'].split(',')])
-    
-    nonormalize = kwargs.pop('no_normalization')
-    if nonormalize:
-        kwargs['normalization'] = None
-        
-    noshuffle = kwargs.pop('no_shuffle')
-    if noshuffle:
-        kwargs['shuffle'] = False
-    else:
-        kwargs['shuffle'] = True
-
-    generate_training_data(**kwargs)
-
-
-def generate_training_data(basepath, source_dir, target_dir, save_file, axes='CZYX', pattern='*.tif*', **kwargs):
+def datagen(basepath, source_dir, target_dir, save_file, axes='CZYX', pattern='*.tif*',
+            normalize_patches=False, **kwargs):
     """
     Create normalized training data from pairs of corresponding TIFF images read from folders.
 
@@ -65,6 +21,10 @@ def generate_training_data(basepath, source_dir, target_dir, save_file, axes='CZ
         Semantics of axes of loaded images (assumed to be the same for all images).
     pattern : str
         Glob-style pattern to match the desired TIFF images.
+    normalize_patches : bool
+        If True, extracted patches will be normalized by the default CARE normalizer (:func:`norm_percentiles`).
+        If False, no normalization will be done.
+        Default is False.
 
     Attributes
     ----------
@@ -101,9 +61,7 @@ def generate_training_data(basepath, source_dir, target_dir, save_file, axes='CZ
         axes=axes,
         pattern=pattern
     )
+    if not normalize_patches:
+        kwargs['normalization'] = None
 
     create_patches(raw_data, save_file=save_file, **kwargs)
-
-
-if __name__ == '__main__':
-    main()
