@@ -15,7 +15,7 @@ def __copy_and_normalize(fn_in, fn_out, maxval=255):
     io.imsave(fn_out, img.astype(int_type(img)))
 
 
-def care_prep(input_pair, output_dir, name_high='high', name_low='low', normalize=False, maxval=255):
+def care_prep(input_pair, output_dir, name_high='high', name_low='low', normalize=True, maxval=255):
     input_high, input_low = input_pair
     for dir_in, dir_out in zip([input_high, input_low],
                                [name_high, name_low]):
