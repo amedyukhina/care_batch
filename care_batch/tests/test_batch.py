@@ -66,7 +66,7 @@ class TestBatch(unittest.TestCase):
 
         self.assertTrue(os.path.exists(path + 'accuracy.csv'))
         self.assertEqual(len(pd.read_csv(path + 'accuracy.csv')), 3)
-        # shutil.rmtree(path)
+        shutil.rmtree(path)
 
 
 if __name__ == '__main__':
