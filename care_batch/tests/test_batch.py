@@ -32,32 +32,37 @@ class TestBatch(unittest.TestCase):
         path = os.getcwd() + '/tmp/'
         if os.path.exists(path):
             shutil.rmtree(path)
-        img, img_noise = generate_training_pair()
         os.makedirs(path + 'input/high')
         os.makedirs(path + 'input/low')
-        io.imsave(path + 'input/high/image.tif', img)
-        io.imsave(path + 'input/low/image.tif', img_noise)
+
+        for i in range(5):
+            img, img_noise = generate_training_pair()
+            io.imsave(path + rf'input/high/image{i}.tif', img)
+            io.imsave(path + rf'input/low/image{i}.tif', img_noise)
 
         care_prep([path + 'input/high', path + 'input/low'],
-                  path + 'data', normalize=True)
-        datagen(path + 'data', source_dir='low', target_dir='high',
+                  path + 'data', normalize_image=True, test_fraction=0, validation_fraction=0.5)
+        datagen(path + 'data/train', source_dir='low', target_dir='high',
                 save_file=path + 'data.npz', axes='ZYX', patch_size=[8] * 3, n_patches_per_image=20)
 
         train(path + 'data.npz', model_name='care_model', model_basedir=path + 'models',
               train_epochs=3, train_steps_per_epoch=10)
 
-        restore(path + 'data/low', path + 'data/low_restored',
+        restore(path + 'data/validation/low', path + 'data/validation/low_restored',
                 model_name='care_model', model_basedir=path + 'models', axes='ZYX')
 
-        evaluate(path + 'data/low_restored', path + 'data/high', path + 'accuracy/restored.csv', model_name='restored')
-        evaluate(path + 'data/low', path + 'data/high', path + 'accuracy/low.csv', model_name='low')
-        evaluate(path + 'data/high', path + 'data/high', path + 'accuracy/high.csv', model_name='high')
+        evaluate(path + 'data/validation/low_restored', path + 'data/validation/high',
+                 path + 'accuracy/restored.csv', model_name='restored')
+        evaluate(path + 'data/validation/low', path + 'data/validation/high',
+                 path + 'accuracy/low.csv', model_name='low')
+        evaluate(path + 'data/validation/high', path + 'data/validation/high',
+                 path + 'accuracy/high.csv', model_name='high')
         summarize_stats(walk_dir(path + 'accuracy'), path + 'accuracy.csv')
 
-        fns = os.listdir(path + 'data/high')
+        fns = os.listdir(path + 'data/validation/high')
         ind = 0
         folders = ['high', 'low', 'low_restored']
-        plot_pairs(fns[ind], folders, path + 'data')
+        plot_pairs(fns[ind], folders, path + 'data/validation')
         plt.savefig(path + 'plot.png')
 
         plot_patches(path + 'data.npz', model_name='care_model', model_basedir=path + 'models',
@@ -65,7 +70,7 @@ class TestBatch(unittest.TestCase):
         plt.savefig(path + 'patches.png')
 
         self.assertTrue(os.path.exists(path + 'accuracy.csv'))
-        self.assertEqual(len(pd.read_csv(path + 'accuracy.csv')), 3)
+        self.assertEqual(len(pd.read_csv(path + 'accuracy.csv')), 6)
         shutil.rmtree(path)
 
 
