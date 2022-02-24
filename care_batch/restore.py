@@ -1,25 +1,16 @@
 import os
 
-import numpy as np
 from am_utils.utils import walk_dir, imsave
 from csbdeep.models import CARE
 from csbdeep.utils.tf import limit_gpu_memory
 from skimage import io
 from tqdm import tqdm
 
-from .utils import int_type
-
-
-def __normalize_image(img, maxval):
-    if img.min() > 0:
-        img = img - img.min()
-    if img.max() > maxval:
-        img = img.astype(np.float32) / img.max() * maxval
-    return img
+from .utils import int_type, normalize
 
 
 def restore(input_dir, output_dir, model_name, model_basedir, limit_gpu=0.5,
-            normalize_image=True, maxval=255, **kwargs):
+            normalize_image=True, maxval=255, pmin=0, pmax=100, **kwargs):
     """
 
     Parameters
@@ -44,6 +35,12 @@ def restore(input_dir, output_dir, model_name, model_basedir, limit_gpu=0.5,
         Maximum value for the normalized image.
         Should be the same as in `care_prep`
         Default is 255.
+    pmin : scalar, optional
+        Lower percentile for normalization.
+        Default is 0 (minimum value).
+    pmax : scalar, optional
+        Upper percentile for normalization.
+        Default is 100 (maximum value).
     kwargs : key value
         Configuration attributes (see below).
 
@@ -77,7 +74,7 @@ def restore(input_dir, output_dir, model_name, model_basedir, limit_gpu=0.5,
 
         x = io.imread(sample)
         if normalize_image:
-            x = __normalize_image(x, maxval)
+            x = normalize(x, maxval, pmin=pmin, pmax=pmax)
             kwargs['normalizer'] = None
         restored = model.predict(x, **kwargs)
         imsave(output_fn, restored.astype(int_type(restored)))
