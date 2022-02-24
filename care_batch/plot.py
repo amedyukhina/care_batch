@@ -29,9 +29,10 @@ def plot_patches(datafile, ncols=7, nrows=2, figsize=4, model_name=None, model_b
         patches.append(predicted)
         title += ',  third row: predicted from source'
 
-    plt.figure(figsize=(ncols * figsize, len(patches) * figsize + 2))
     for i in range(nrows):
+        plt.figure(figsize=(ncols * figsize, len(patches) * figsize + 2))
         sl = slice(ncols * i, ncols * (i + 1)), 0
         plot_some(*[pt[sl] for pt in patches], title_list=[np.arange(sl[0].start, sl[0].stop)])
         plt.suptitle(title)
-    plt.tight_layout()
+        plt.tight_layout()
+        plt.show()
