@@ -9,7 +9,7 @@ def int_type(img):
     return dtype
 
 
-def normalize(img, maxval, pmin=0, pmax=100):
+def normalize(img, maxval=255, pmin=0, pmax=100):
     img = img.astype(np.float32)
     mn, mx = [np.percentile(img, p) for p in [pmin, pmax]]
     img = np.clip((img - mn) / (mx - mn), 0, 1) * maxval
