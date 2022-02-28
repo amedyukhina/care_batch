@@ -11,7 +11,7 @@ from skimage.metrics import structural_similarity
 
 
 def plot_pairs(fn, folders, basepath, figsize=7, pmin=0, pmax=100,
-               plot_ssim=False, name_high='high'):
+               plot_ssim=False, name_high='high', plot_profile=False, z=50, y=100):
     imgs = [io.imread(os.path.join(basepath, fld, fn)) for fld in folders]
     title = ''
     ts = 0
@@ -41,6 +41,16 @@ def plot_pairs(fn, folders, basepath, figsize=7, pmin=0, pmax=100,
         plt.figure(figsize=(figsize * len(imgs), figsize))
         plot_some(np.stack(ssim_maps), title_list=[titles], pmin=0, pmax=100)
         plt.tight_layout()
+
+    if plot_profile:
+        plt.figure(figsize=(figsize*2, figsize))
+        if z >= imgs[0].shape[0]:
+            z = imgs[0].shape[0] - 1
+        if y >= imgs[0].shape[1]:
+            y = imgs[0].shape[1] - 1
+        for i in range(len(imgs)):
+            plt.plot(imgs[i][z, y], label=folders[i], lw=2)
+        plt.legend()
 
 
 def plot_patches(datafile, ncols=7, nrows=2, figsize=4, model_name=None, model_basedir=None):
