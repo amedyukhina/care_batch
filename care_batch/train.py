@@ -9,7 +9,7 @@ from csbdeep.utils import axes_dict, plot_history
 from csbdeep.utils.tf import limit_gpu_memory
 
 
-def train(data_file, model_name, model_basedir, validation_split=0.2, limit_gpu=0.5, **kwargs):
+def train(data_file, model_name, model_basedir, validation_split=0.2, limit_gpu=0.5, save_history=True, **kwargs):
     """
 
     Parameters
@@ -25,6 +25,9 @@ def train(data_file, model_name, model_basedir, validation_split=0.2, limit_gpu=
     limit_gpu : float
         Fraction of the GPU memory to use.
         Default: 0.5
+    save_history : bool
+        If True, save the training history.
+        Default is True.
     kwargs : key value
         Configuration attributes (see below).
 
@@ -74,6 +77,7 @@ def train(data_file, model_name, model_basedir, validation_split=0.2, limit_gpu=
     config = Config(axes, n_channel_in, n_channel_out, **kwargs)
     model = CARE(config, model_name, basedir=model_basedir)
     history = model.train(X, Y, validation_data=(X_val, Y_val))
-    plt.figure(figsize=(16, 5))
-    plot_history(history, ['loss', 'val_loss'], ['mse', 'val_mse', 'mae', 'val_mae'])
-    plt.savefig(os.path.join(model_basedir, model_name, 'history.png'))
+    if save_history:
+        plt.figure(figsize=(16, 5))
+        plot_history(history, ['loss', 'val_loss'], ['mse', 'val_mse', 'mae', 'val_mae'])
+        plt.savefig(os.path.join(model_basedir, model_name, 'history.png'))
