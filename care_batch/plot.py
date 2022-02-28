@@ -10,8 +10,18 @@ from skimage import io
 
 def plot_pairs(fn, folders, basepath, figsize=7, pmin=2, pmax=99.8):
     imgs = [io.imread(os.path.join(basepath, fld, fn)) for fld in folders]
+    title = ''
     plt.figure(figsize=(figsize * len(imgs), figsize))
+    j = 0
+    for i in range(len(folders)):
+        if len(folders[i]) > 20:
+            j += 1
+            code = rf'model {j}'
+            title += f"{code}: {folders[i]}\n"
+            folders[i] = code
+
     plot_some(np.stack(imgs), title_list=[folders], pmin=pmin, pmax=pmax)
+    plt.suptitle(title)
     plt.tight_layout()
 
 
