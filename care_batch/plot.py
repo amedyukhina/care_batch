@@ -10,9 +10,11 @@ from .evaluate import nrmse
 from skimage.metrics import structural_similarity
 
 
-def plot_pairs(fn, folders, basepath, figsize=7, pmin=0, pmax=100,
+def plot_pairs(fn, folders, basepath, figsize=7, pmin=0, pmax=100, ind=None,
                plot_ssim=False, name_high='high', plot_profile=False, z=50, y=100):
     imgs = [io.imread(os.path.join(basepath, fld, fn)) for fld in folders]
+    if ind is not None:
+        imgs = [img[ind[0]:ind[1]] for img in imgs]
     title = ''
     ts = 0
     j = 0
