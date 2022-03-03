@@ -34,7 +34,7 @@ def plot_pairs(fn, folders, basepath, figsize=7, pmin=0, pmax=100,
         titles = []
         gt = io.imread(os.path.join(basepath, name_high, fn))
         for img in imgs:
-            ssim_ind, ssim_map = structural_similarity(gt, img, full=True)
+            ssim_ind, ssim_map = structural_similarity(gt*1., img*1., full=True)
             ssim_maps.append(ssim_map)
             titles.append(rf'SSIM={round(ssim_ind, 2)}; NRSME={round(nrmse(gt, img), 4)}')
 
