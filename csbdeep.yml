@@ -5,45 +5,17 @@ channels:
 dependencies:
   - python>=3.7
   - ipykernel
-  - bokeh
-  - dask
-  - datashader
-  - holoviews
-  - imagecodecs
-  - imageio
-  - intake
-  - intake-xarray
-  - itk
-  - javabridge
+  - jupyter
   - keras>=2.2.5,<2.3.0
-  - matplotlib==3.2
-  - mrcfile
-  - natsort
-  - nibabel
-  - numcodecs
-  - numba
   - pandas
-  - pillow
-  - pydicom
-  - pyqt
   - scikit-image
-  - scikit-learn
   - scipy
-  - simpleitk
+  - seaborn
   - tensorflow-gpu>=1.15,<2
   - tqdm
-  - xarray
-  - xmltodict
-  - zarr
   - pip
+  - pytest
   - pip:
-    - flywheel-cli
-    - flywheel-sdk
-    - imagecodecs
-    - memory-profiler
     - csbdeep
-    - n2v
-    - pynrrd
-    - python-bioformats
-    - git+https://github.com/bhoeckendorf/pyklb.git@skbuild
-    - git+https://github.com/bhoeckendorf/intake_io.git
+    - git+https://github.com/amedyukhina/am_utils.git
+    - git+https://github.com/amedyukhina/care_batch.git
