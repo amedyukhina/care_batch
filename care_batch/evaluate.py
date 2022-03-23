@@ -53,4 +53,4 @@ def summarize_stats(input_fns, output_fn):
     df = [pd.read_csv(fn) for fn in input_fns]
     df = pd.concat(df, ignore_index=True)
     os.makedirs(os.path.dirname(output_fn), exist_ok=True)
-    df.to_csv(output_fn)
+    df.to_csv(output_fn, index=False)
